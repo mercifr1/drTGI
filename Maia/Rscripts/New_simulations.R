@@ -12,9 +12,9 @@ library(brms)
 #'Define the structure of the model
 
 code <- "
-$PARAM    TVKG =0.6, TVKS0=0.4, TVGAMA=0.8, TVBASE =70, T=0 
+$PARAM    TVKG =0.6, TVKS0=0.4, TVGAMA=0.8, TVBASE =70 
 $PARAM@covariates
-DOSE=0
+DOSE=10, T=0
 
 $OMEGA  0.005 0.03 0.003 0.01
 $SIGMA 0.05
@@ -79,11 +79,20 @@ flt<-indf %>%
 head(flt,n=10)
 
 
-#' Design matrix: 2 level dose at a certain time point for all patients
+#' Design matrix: 2 dose levels at a certain time point for all patients
 #' ---------------------------------------------------
 
 stepup0<-flt%>%mutate(DOSE=ifelse(flt$tnum==5,5,10))
-head(stepup0)
+head(stepup0,n=10)
+
+
+#' Design matrix: 5 dose levels at a certain time point for all patients
+#' ---------------------------------------------------
+#' 
+stepup1<-flt%>%mutate(DOSE=ifelse(tnum==2 | tnum==4|tnum==6| tnum==8,5,10))
+head(stepup1,n=10)
+
+
 
 
 
@@ -119,11 +128,31 @@ set.seed(123)
 mrgsim_d(mod, as.data.frame(stepup0), carry.out="KS,DOSE")%>%plot(RESP~T)
 
 
+
+#' **2. For the 5 dose levels**
+#' 
+set.seed(123)
+
+snd.stepup1<-mrgsim_d(mod, as.data.frame(stepup1), carry.out="KS,DOSE") %>% 
+  as.data.frame()%>%
+  subset(select=-c(time))
+
+head(snd.stepup1,n=10)
+
+set.seed(123)
+mrgsim_d(mod, as.data.frame(stepup1), carry.out="KS,DOSE")%>%plot(RESP~T)
+
+
+
 #'Fit with brms 
 #'-----------------------
 
 
-#'Prepare the data for fittin
+#'Prepare the data for fit
+#'
+#'
+#'Flat Dose:
+#'-----------------------------------------------------------------------------
 #' log-transformation of the parameters
 new_data<-snd.flt%>%
   mutate(lKG=log(KG),lKS0=log(KS0),lGAMA=log(GAMA),lBAS=log(BASE))#%>%subset(select=-c(KS0,KG,GAMA,BASE))
@@ -154,7 +183,7 @@ getpr2<-get_prior(RESP ~ exp(lBAS) *  exp( exp(lKG) * T - ( exp(lKS0) *log(DOSE)
 getpr3<-get_prior(RESP ~ exp(lBAS) *  exp( exp(lKG) * T - ( exp(lKS0) *log(DOSE)/ exp(lGAMA) ) *( 1 - exp(exp(lGAMA)*T)))  ,
                   data = new_data, family = student())
 
-# # first try: it is not converging 
+# # first try: it is not converging:max(Rhat) is  > 3
 # 
 # prior1<-set_prior("student_t(3, 67.2, 10)",class="b",nlpar="lBAS")+
 #   set_prior("student_t(3, 67.2, 10)",class="b",nlpar="lKG")+
@@ -175,6 +204,7 @@ getpr3<-get_prior(RESP ~ exp(lBAS) *  exp( exp(lKG) * T - ( exp(lKS0) *log(DOSE)
 
 # second try:It converge: Rhat=1 
 
+#' Define the model structure and parameters < random effects>
 analytic2 <- bf(RESP ~ exp(lBAS) *  exp( (exp(lKG)/1000) * T - ( (exp(lKS0)/1000) *log(DOSE)/ (exp(lGAMA)/1000) ) *( 1 - exp((exp(lGAMA)/1000)*T)))  ,
                nl = TRUE, 
                lBAS ~ 1+ (1|ID),
@@ -196,10 +226,27 @@ prior2
 m02<-brm(analytic2, data=new_data, prior=prior2, family=lognormal(link = "identity"),
 
          iter=2000, chains=4, warmup=1000, seed=1234, cores=4,control = list(adapt_delta = .9))
+summary(m02)
 plot(m02)
 
+pairs(m02)
 
+#' 2 Dose levels:
+#'-----------------------------------------------------------------------------
+#' log-transformation of the parameters
+#' 
+ 
 
+new_data_2<-snd.stepup0%>%
+  mutate(lKG=log(KG),lKS0=log(KS0),lGAMA=log(GAMA),lBAS=log(BASE))#%>%subset(select=-c(KS0,KG,GAMA,BASE))
+names(new_data_2)
+head(new_data_2)
+
+m03<-brm(analytic2, data=new_data_2, prior=prior2, family=lognormal(link = "identity"),
+         
+         iter=2000, chains=4, warmup=1000, seed=1234, cores=4,control = list(adapt_delta = .9))
+summary(m03)
+plot(m03)
 
 
 #'--------------------------ODE form: Simulation--------------------------------
@@ -221,7 +268,7 @@ $MAIN
 double KG = TVKG * exp(ETA(1));
 double KS0 = TVKS0 * exp(ETA(2));
 double GAMA = TVGAMA * exp(ETA(3));
-double BASE = TVBASE*exp(ETA(4));
+capture BASE = TVBASE*exp(ETA(4));
 RESP_0 = BASE;
 
 $OMEGA  0.005 0.03 0.003 0.01
@@ -234,7 +281,7 @@ dxdt_RESP = KG *RESP -   KS* RESP;
 
 
 $CAPTURE 
-KS  RESP_0
+KS  RESP_0 BASE
 '
 
 #' Compile the model
@@ -284,12 +331,23 @@ head(flt_ODE,n=10)
 stepup0_ODE<-flt_ODE%>%mutate(DOSE=ifelse(flt_ODE$tnum==5,5,10))
 head(stepup0_ODE)
 
+
+
+#' Design matrix: 5 dose levels at a certain time point for all patients
+#' ---------------------------------------------------
+#' 
+stepup1_ODE<-flt_ODE%>%mutate(DOSE=ifelse(tnum==2 | tnum==4|tnum==6| tnum==8,5,10))
+head(stepup1_ODE)
+
+
+
+
 #' Simulation
 #' ---------------------------------------------------
 #' 
 #' **1. For the flat dose**
 set.seed(123)
-snd.flt_ODE<-mrgsim_d(ODEmod, as.data.frame(flt_ODE), carry.out="KS,KS0,DOSE,RESP_0,T") %>% 
+snd.flt_ODE<-mrgsim_d(ODEmod, as.data.frame(flt_ODE), carry.out="KS,KS0,DOSE,RESP_0,T,BASE") %>% 
   as.data.frame()
 head(snd.flt_ODE)
 mrgsim_d(ODEmod, as.data.frame(flt_ODE), carry.out="DOSE,T") %>%  plot(RESP~T)
@@ -298,7 +356,7 @@ mrgsim_d(ODEmod, as.data.frame(flt_ODE), carry.out="DOSE,T") %>%  plot(RESP~T)
 #' **2. For the 2 level dose**
 #' 
 set.seed(123)
-snd.stepup0_ODE<-mrgsim_d(ODEmod, as.data.frame(stepup0_ODE), carry.out="KS,DOSE,RESP_0,T") %>% 
+snd.stepup0_ODE<-mrgsim_d(ODEmod, as.data.frame(stepup0_ODE), carry.out="KS,DOSE,RESP_0,T,BASE") %>% 
   as.data.frame()
 
 head(snd.stepup0_ODE,n=10)
@@ -306,5 +364,14 @@ head(snd.stepup0_ODE,n=10)
 mrgsim_d(ODEmod, as.data.frame(stepup0_ODE), carry.out="KS,DOSE,RESP_0,T")%>%plot(RESP~T)
 
 
+#' **3. For the 5  dose levels**
+#' 
+set.seed(123)
+snd.stepup1_ODE<-mrgsim_d(ODEmod, as.data.frame(stepup1_ODE), carry.out="KS,DOSE,RESP_0,T,BASE") %>% 
+  as.data.frame()
+
+head(snd.stepup1_ODE,n=10)
+
+mrgsim_d(ODEmod, as.data.frame(stepup1_ODE), carry.out="KS,DOSE,RESP_0,T")%>%plot(RESP~T)
 
 
