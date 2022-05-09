@@ -135,7 +135,7 @@ head(snd.flt_ODE,n=20)
 
 set.seed(123)
 #plot the trend of RESP over time
-mrgsim_d(model_ode, as.data.frame(flt_ODE)) %>%  plot(RESP~time)
+mrgsim_d(model_ode, as.data.frame(flt)) %>%  plot(RESP~time)
 
 set.seed(123)
 
@@ -148,12 +148,12 @@ set.seed(123)
 #' double DV=REPS+EPS(1)
 #' Thus, our solution and reponse variable is called : <DV> and not <RESP>
 
-snd.flt_ODE_sigma<-mrgsim_d(model_ode_sigma, as.data.frame(flt_ODE)) %>% 
+snd.flt_ODE_sigma<-mrgsim_d(model_ode_sigma, as.data.frame(flt)) %>% 
   as.data.frame()
 head(snd.flt_ODE_sigma,n=20)
 
 set.seed(123)
-mrgsim_d(model_ode_sigma, as.data.frame(flt_ODE)) %>%  plot(DV~time)
+mrgsim_d(model_ode_sigma, as.data.frame(flt)) %>%  plot(DV~time)
 
 # Conclusion: <KS> is varying over time (NOTE: same values as the one in the Analytical simulation)
 #           : <BASE> and <RESP_0> have the same values (NOTE: same values as the one in the Analytical simulation, no <EPS(1)> in their calculation )

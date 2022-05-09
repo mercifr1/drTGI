@@ -15,37 +15,34 @@ library(brms)
 #NOTE : we can still capture EPS(1), because by default $SIGMA matrix in 0
 
 pred<- "
-$PARAM    TVKG =0.6, TVKS0=0.4, TVGAMA=0.8, TVBASE =70 
+$PARAM    TVKG =0.6, TVKS0=0.4, TVGAMMA=0.8, TVBASE =70 
 $PARAM@covariates
 DOSE=10
 
 $OMEGA  0.005 0.03 0.003 0.01
 
-
 $PRED
 double KG = TVKG * exp(ETA(1));
 double KS0 = TVKS0 * exp(ETA(2));
-double GAMA = TVGAMA * exp(ETA(3));
+double GAMMA = TVGAMMA * exp(ETA(3));
 double BASE=TVBASE * exp(ETA(4));
 double RESP_0=BASE;
 
-double KS =  KS0 * log(DOSE) * exp(-GAMA * TIME);
-double RESP = RESP_0*(exp((KG*TIME)-( KS0 * log(DOSE)/GAMA) + KS/GAMA));
+double KS =  KS0 * log(DOSE) * exp(-GAMMA * TIME);
+double RESP = RESP_0*(exp((KG*TIME)-( KS0 * log(DOSE)/GAMMA) + KS/GAMMA));
 
-
-
-$CAPTURE    RESP RESP_0 BASE KS KS0 KG GAMA EPS(1)
+$CAPTURE    RESP RESP_0 BASE KS KS0 KG GAMMA EPS(1)
 "
-# compile the model
+#' Compile the model
 set.seed(123)
 model_pred<-mcode("PRED",pred)
 
 
-# With SIGMA
+#' With SIGMA
 # NOTE: we add  +EPS(1) to the RESP, compared to the <pred> model
 
 pred_sigma<- "
-$PARAM    TVKG =0.6, TVKS0=0.4, TVGAMA=0.8, TVBASE =70 
+$PARAM    TVKG =0.6, TVKS0=0.4, TVGAMMA=0.8, TVBASE =70 
 $PARAM@covariates
 DOSE=10
 
@@ -56,19 +53,17 @@ $SIGMA 0.05
 $PRED
 double KG = TVKG * exp(ETA(1));
 double KS0 = TVKS0 * exp(ETA(2));
-double GAMA = TVGAMA * exp(ETA(3));
+double GAMMA = TVGAMMA * exp(ETA(3));
 double BASE=TVBASE * exp(ETA(4));
 double RESP_0=BASE;
 
-double KS =  KS0 * log(DOSE) * exp(-GAMA * TIME);
-double RESP = RESP_0*(exp((KG*TIME)-( KS0 * log(DOSE)/GAMA) + KS/GAMA))+EPS(1);
+double KS =  KS0 * log(DOSE) * exp(-GAMMA * TIME);
+double RESP = RESP_0*(exp((KG*TIME)-( KS0 * log(DOSE)/GAMMA) + KS/GAMMA))+EPS(1);
 
-
-
-$CAPTURE    RESP RESP_0 BASE KS KS0 KG GAMA EPS(1)
+$CAPTURE    RESP RESP_0 BASE KS KS0 KG GAMMA EPS(1)
 "
 
-#Compile the model
+#' Compile the model
 set.seed(123)
 model_pred_sigma<-mcode("PREDSIGMA",pred_sigma)
 
@@ -118,7 +113,7 @@ head(flt,n=15)
 
 #' Simulation for pred ( without SIGMA)
 set.seed(123)
-snd.flt<-mrgsim_d(model_pred, as.data.frame(flt), carry.out="KS,DOSE,RESP_0,BASE") %>% 
+snd.flt<-mrgsim_d(model_pred, as.data.frame(flt), carry.out="DOSE") %>% 
   as.data.frame()
 head(snd.flt,n=20)
 
@@ -132,14 +127,13 @@ head(snd.flt,n=20)
 
 # plot
 set.seed(123)
-mrgsim_d(model_pred, as.data.frame(flt), carry.out="KS,DOSE,RESP_0,BASE") %>% plot(RESP~time)
+mrgsim_d(model_pred, as.data.frame(flt), carry.out="DOSE") %>% plot(RESP~time)
 
 
 
 #'Simulation for pred_sigma ( with SIGMA 0.05)
 set.seed(123)
-
-snd.flt_sigma<-mrgsim_d(model_pred_sigma, as.data.frame(flt)) %>% 
+snd.flt_sigma<-mrgsim_d(model_pred_sigma, as.data.frame(flt),carry.out="DOSE") %>% 
   as.data.frame()
 head(snd.flt_sigma,n=20)
 
