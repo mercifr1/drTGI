@@ -96,8 +96,7 @@ ggplot(snd.flt, aes(TIME,DV,group=ID,color=factor(ID)))+
   geom_line(size=1)+
   theme_bw()+
   scale_y_continuous(breaks = seq(50,90,5))+
-  ylab("SLD")+
-  title("Simulation Analytical form :Flat Dose")
+  ylab("SLD")
 
 #set.seed(123)
 #mrgsim_d(model_pred, as.data.frame(flt),end=-1)%>%plot(RESP~TIME)

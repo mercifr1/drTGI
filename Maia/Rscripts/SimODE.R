@@ -34,7 +34,7 @@ dxdt_RESP = KG *RESP -   KS*log(DOSE)*RESP;
 
 
 $CAPTURE 
-  RESP_0 EPS(1)
+  RESP_0 EPS(1) 
 '
 #' Compile the model
 
@@ -46,7 +46,7 @@ model_ode<-mcode("ODE",ode)
 #'----------------------------------------------------
 nInd<-5 #number of individual
 
-# buid a function to define the time 
+# build a function to define the time 
 funtime<-function(end,delta){
   ty<-round(seq(0,end,delta),2)
   p<-length(ty)
