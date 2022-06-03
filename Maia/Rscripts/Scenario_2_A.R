@@ -31,7 +31,7 @@ set.seed(123)
 id_obs_data<-tibble(ID=1:nInd)%>%
   split(.$ID) %>%
   map_dfr(., ~funtime(ny=nweek,week=week), .id="ID")%>% 
-mutate(id_obs=rep(actuar::rztpois(n=nInd,lambda=4),each=10))%>%
+  mutate(id_obs=rep(actuar::rztpois(n=nInd,lambda=4),each=10))%>%
   filter(nt<=ind_obs)
 
 head(id_obs_data,n=30)
@@ -53,8 +53,8 @@ data<-data%>%mutate(TIME=tyear,
                     ID=as.numeric(as.character(ID)),
                     TVKS0=ifelse(DOSE==1.67,0.8,ifelse(DOSE==30,0.3,0.4)),# change the parameters value 
                     TVKG=ifelse(DOSE==1.67,0.3,ifelse(DOSE==30,0.8,0.6)),# change the parameters value
-                                  EVID=2,
-                                  CMT=1)%>%
+                    EVID=2,
+                    CMT=1)%>%
   subset(select=-c(tyear))
 
 
@@ -77,4 +77,3 @@ ode.coh<-ode.coh%>%
          MIN20=MIN+20*MIN/100,
          FLAG20=ifelse(DV<=MIN20,0,1)
   )%>%ungroup
-
