@@ -32,7 +32,24 @@ Once the syntax of the model and the results where satisfactory, the next step i
     -  each cohort have a different flat/constant dose=> 5 dose levels 
     -  number of observations per individual is different and it follows a zero-truncated Poisson distr. (lambda_0=4)
     -  lambda_0 reflect the short follow-up or early treatment discontinuation
-   
+
+
+ 5. **Scenario_2A.R**: unbalanced design matrix:  
+ 
+ **NOTE**:  this file contain a proper R code for the future design matrix compared **Scenario_2.R**;
+           to run this file it is necessary to run and source the **SimODE.R** before.
+           
+           
+     - dose-cohorts with different number of individual/cohort:
+       - 5 cohorts
+       - number of individual per cohort follows a truncated Poisson distr. (lambda_N=4)
+       - obtain between 3 and 10 individuals per cohort.
+
+    -  each cohort have a different flat/constant dose=> 5 dose levels 
+    -  number of observations per individual is different and it follows a zero-truncated Poisson distr. (lambda_0=4)
+    -  lambda_0 reflect the short follow-up or early treatment discontinuation
+
+
    **NOTE**: Next updated need to be implemented: 
              - dose reductions for  3rd ,4th and 5 th cohorts ( toxicity)
              - remove the measurements that incresed more then 20% from nadir.
