@@ -42,7 +42,7 @@ head(id_obs_data,n=30)
 doses<-10*c(1/6, 1/2, 1, 2, 3)
 set.seed(123)
 id_cohort<-data.frame(DOSE=round(doses,2),coh=1:length(doses),ind.coh=extraDistr::rtpois(n=5,lambda=4))
-id_cohort_data<-uncount(id_cohort, ind.coh)%>%mutate(ID=1:25)
+id_cohort_data<-tidyr::uncount(id_cohort, ind.coh)%>%mutate(ID=1:25)
 #uncount() : duplicating rows according to a weighting variable (or expression):performs the opposite to dplyr::count()
 head(id_cohort_data)
 
@@ -79,3 +79,9 @@ ode.coh<-ode.coh%>%
          FLAG20=ifelse(DV<=MIN20,0,1)
   )%>%ungroup
 
+p<-ggplot(ode.coh, aes(TIME,DV,group=ID,color=factor(DOSE)))+
+  geom_line()+
+  theme_bw()+
+  scale_y_continuous(breaks = seq(50,90,5))+
+  ylab("SLD")
+p
