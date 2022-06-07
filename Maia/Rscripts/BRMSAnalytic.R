@@ -84,7 +84,7 @@ m02<-brm(analytic2, data=new_data, prior=prior2, family=lognormal(link = "identi
          
          iter=2000, chains=4, warmup=1000, seed=1234, cores=4,control = list(adapt_delta = .9))
 summary(m02)
-plot(m02)
+plot_brms_PRED_flt<-plot(m02)
 
 pairs(m02)
 
@@ -103,8 +103,7 @@ m03<-brm(analytic2, data=new_data_2, prior=prior2, family=lognormal(link = "iden
          
          iter=2000, chains=4, warmup=1000, seed=1234, cores=4,control = list(adapt_delta = .9))
 summary(m03)
-plot(m03)
-
+plot_brms_PRED_tv<-plot(m03)
 
 
 
