@@ -32,7 +32,7 @@ id_obs_data<-tibble(ID=1:nInd)%>%
   split(.$ID) %>%
   map_dfr(., ~funtime(ny=nweek,week=week), .id="ID")%>% 
   mutate(id_obs=rep(actuar::rztpois(n=nInd,lambda=4),each=10))%>%
-  filter(nt<=ind_obs)
+  filter(nt<=id_obs)
 
 head(id_obs_data,n=30)
 
@@ -43,11 +43,12 @@ doses<-10*c(1/6, 1/2, 1, 2, 3)
 set.seed(123)
 id_cohort<-data.frame(DOSE=round(doses,2),coh=1:length(doses),ind.coh=extraDistr::rtpois(n=5,lambda=4))
 id_cohort_data<-uncount(id_cohort, ind.coh)%>%mutate(ID=1:25)
+#uncount() : duplicating rows according to a weighting variable (or expression):performs the opposite to dplyr::count()
 head(id_cohort_data)
 
 
 #merge the 2 data set by ID and keep the DOSE  column from 
-data<-merge(df2,indf.S2,by="ID",all.x=T)
+data<-merge(id_cohort_data,id_obs_data,by="ID",all.x=T)
 
 data<-data%>%mutate(TIME=tyear,
                     ID=as.numeric(as.character(ID)),
@@ -77,3 +78,4 @@ ode.coh<-ode.coh%>%
          MIN20=MIN+20*MIN/100,
          FLAG20=ifelse(DV<=MIN20,0,1)
   )%>%ungroup
+
