@@ -50,6 +50,7 @@ Once the syntax of the model and the results where satisfactory, the next step i
            
            
   7. **Scenario_2_Dose_Reduction** : unbalanced design matrix with dose reductions in the higher dose cohorts 
+  
      
      **Remark**: to run this file it is necessary to run and source before the **SimODE.R**, then **Scenario_2A.R** .
      
@@ -57,9 +58,16 @@ Once the syntax of the model and the results where satisfactory, the next step i
      - Add dose reduction to the 3rd,4th and 5th dose-cohort
            
            
-     **NOTE**: Next updated need to be implemented: 
+   8. **Scenario_3_Dose_Omission** : unbalanced design matrix with dose omission in the higher dose cohorts
+    
+      **Remark**: to run this file it is necessary to run and source before the **SimODE.R**, **Scenario_2A.R** .
+      - Same design as Scenario_2A.R
+      - Add the dose Omission on 3rd, 4th and 5th cohort independent on the design matrix from **Scenario_2_Dose_Reduction**, only using the data set from Scenario_2A
+      - For the highest dose -cohort, there is as a constraint : the dose omission always affects 2 dosing events in a row ( TO CHECK)
+
+**NOTE**: Next updated need to be implemented: 
    
              - dose reductions for  3rd ,4th and 5 th cohorts ( toxicity)//TO CHECK
              - remove the measurements that incresed more then 20% from nadir.//DONE
              - dose omision // in process
-
+             - cumulates events of dose-reduction and dose-omission as described for Scenario_2. and Scenario_3.// TO DISCUSS
