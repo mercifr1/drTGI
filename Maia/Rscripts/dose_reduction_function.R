@@ -7,7 +7,7 @@ dose_reduction <- function(initial_data, cohort, proportion, reduction) {
     ungroup()
   
   
-  id_proportion<-proportion * length(unique(data1$ID))
+  id_proportion<-proportion * length(unique(data_1$ID))
   nsel<-ifelse(id_proportion-floor(id_proportion)<0.5,floor(id_proportion),ceiling(id_proportion))
   
   
