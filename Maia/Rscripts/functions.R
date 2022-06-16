@@ -3,9 +3,8 @@
 funtime <- function(ny, week) {
   tweek <- jitter(week, amount = 7) #' add small amount of noise
   tyear <- round(tweek / 365, 3) #' transform time in year
-  return(data.frame(nt = 0:ny, tyear)) #' return data frame
+  return(data.frame(N_TIME = 0:ny, tyear)) #' return data frame
 }
-
 scenario_1 <- function(doses, nweek, week,n_N,lambda_N, lambda_0) {
   #' doses: dose levels: a vector with the dose-cohorts
   #' nweek: dose administration at every 6 week : vector with the time( parameter for the for the funtime())
@@ -25,15 +24,14 @@ scenario_1 <- function(doses, nweek, week,n_N,lambda_N, lambda_0) {
   id_obs_data <- tibble(ID = 1:total_number_indiv) %>%
     split(.$ID) %>%
     purrr::map_dfr(., ~ funtime(ny = nweek, week = week), .id = "ID") %>%
-    mutate(id_obs = rep(nb_obs_per_indiv, each = max(.$nt) + 1)) %>%
-    dplyr::filter(nt <= id_obs)
+    mutate(ID_OBS = rep(nb_obs_per_indiv, each = max(.$N_TIME) + 1)) %>%
+    dplyr::filter(N_TIME <= ID_OBS)
   
   #' construct the data with the  number of individual per cohort design matrix
   #' **To each cohort corresponds a different dose e.g. 5 cohort = 5 doses**
   #' 
-  id_cohort <- data.frame(DOSE = round(doses, 2), coh = 1:length(doses), ind.coh = individual_per_coh)
-  
-  id_cohort_data <- tidyr::uncount(id_cohort, ind.coh) %>%
+  id_cohort_data <- data.frame(DOSE = round(doses, 2), COH = 1:length(doses), ID.PER.COH = individual_per_coh)%>%
+    tidyr::uncount(., ID.PER.COH) %>%
     mutate(ID = 1:total_number_indiv)
   #' NOTE: uncount() : duplicating rows according to a weighting variable (or expression):performs the opposite to dplyr::count()
   
@@ -56,7 +54,7 @@ dose_reduction <- function(initial_data, cohort, proportion, reduction, n_unif_o
   
   
   data_1 <- initial_data %>%
-    filter(coh == cohort) %>%
+    filter(COH == cohort) %>%
     group_by(ID) %>%
     mutate(TIME_unif_reduc = round(x=runif(n=n_unif_omis, #generate 1 random uniform number per ID
                                            min=min_unif_omis, # minimum is the 2nd time dose administration
@@ -85,12 +83,11 @@ dose_reduction <- function(initial_data, cohort, proportion, reduction, n_unif_o
 }
 
 
-
 dose_omission <- function(initial_data, cohort, proportion, omission, n_unif_omis, min_unif_omis, max_unif_omis) {
   
   
   data_1 <- initial_data %>% #' initial_data is from Scenario_1
-    dplyr::filter(coh == cohort) %>%
+    dplyr::filter(COH == cohort) %>%
     dplyr::group_by(ID) %>%
     mutate(TIME_unif_omis = round(x = runif(
       n = n_unif_omis,
@@ -122,7 +119,7 @@ dose_omission <- function(initial_data, cohort, proportion, omission, n_unif_omi
     ungroup()
   
   for (i in unique(data_omis$ID)) {
-    try1 <- filter(data_omis, ID == i & coh == 5) %>%
+    try1 <- filter(data_omis, ID == i & COH == 5) %>%
       pull(DOSE_omis)
     if (any(try1 == 0.001)) {
       place <- which(try1 == 0.001)
@@ -130,7 +127,7 @@ dose_omission <- function(initial_data, cohort, proportion, omission, n_unif_omi
         try1[place + 1] <- 0.001
       }
     }
-    data_omis[data_omis$ID == i & data_omis$coh == 5, "DOSE_omis"] <- try1
+    data_omis[data_omis$ID == i & data_omis$COH == 5, "DOSE_omis"] <- try1
   }
   
   data_omis

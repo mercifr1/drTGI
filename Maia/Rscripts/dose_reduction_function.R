@@ -4,7 +4,7 @@ dose_reduction <- function(initial_data, cohort, proportion, reduction, n_unif_o
   
   
   data_1 <- initial_data %>%
-    filter(coh == cohort) %>%
+    filter(COH == cohort) %>%
     group_by(ID) %>%
     mutate(TIME_unif_reduc = round(x=runif(n=n_unif_omis, #generate 1 random uniform number per ID
                                            min=min_unif_omis, # minimum is the 2nd time dose administration
@@ -32,12 +32,7 @@ dose_reduction <- function(initial_data, cohort, proportion, reduction, n_unif_o
   
 }
 
-full_data<-scenario_1(doses = 10 * c(1 / 6, 1 / 2, 1, 2, 3), 
-                      nweek = 9, 
-                      week = 7 * c(0, 6, 12, 18, 24, 30, 36, 42, 48, 52),
-                      n_N=5,
-                      lambda_N=4,
-                      lambda_0=4)
+
 
 data_bind_reduc <- rbind(
   dose_reduction(initial_data = full_data, 
