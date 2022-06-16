@@ -17,6 +17,21 @@ Impact of dosing history on the assessment of TGI
  
 Once the syntax of the model and the results where satisfactory, the next step is to build different scenarios step-by-step for a better approach to the real trial events.
 
+built the function to create the scenarios for the dose- manipulation.
+**Scenarion_1_function.R**: crate a function to compute the number of subject per cohort and number of observations per subject.
+
+
+**dose_reduction_function** : using the dataset from the scenario_1_function make a function for teh dose reduction in the specific cohorts (ex: cohorts 3, 4,5)
+
+
+**dose_omission_function** : using the same dataset from the scenario_1_function make a function for teh dose omission independet from teh dose reduction in the specific cohorts (ex: cohorts 3, 4,5)
+
+**functions**: this files contains all the functions above : useful for generate the entire dataset.
+
+**Merge_sim_data**: it contains the repetion of the final deisgn matrix:
+
+
+
 4. **Scenario_1.R**: balanced design matrix: 
     - dose-cohorts with same number of individual/cohort:
        - 5 cohorts
