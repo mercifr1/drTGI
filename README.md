@@ -19,7 +19,7 @@ Once the syntax of the model and the results where satisfactory, the next step i
 
 Built the function to create the scenarios for the dose- manipulation.
 
- - **Scenarion_1_function.R**: crate a function to compute the number of subject per cohort and number of observations per subject.
+ - **Scenarion_1_function.R**:unbalanced design matrix: crate a function to compute the number of subject per cohort and the number of observations per subject.
 
 
  - **dose_reduction_function** : using the dataset from the scenario_1_function make a function for teh dose reduction in the specific cohorts (ex: cohorts 3, 4,5)
