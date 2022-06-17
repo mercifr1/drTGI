@@ -72,9 +72,9 @@ Built the function to create the scenarios for the dose- manipulation.
     A. Built the design matrix
        - Step1: generate the initial unbalanced design matrix: use  **Scenario_1_function**
        - Step2: Dose reduction : use **dose_reduction_function** on the unbalanced design matrix generated on Step1 to built the dose reduction event on the cohorts that are of interest. Store the dataset with the modifications.   
-       - Step3: Dose omission: use **dose_omission_function** on the unbalanced design matrix generated on Step1 to built the dose omission event on the cohorts that are of interest. Store the dataset with the modifications. **Note**: dose_omission is computed independent from teh dose_reduction
+       - Step3: Dose omission: use **dose_omission_function** on the unbalanced design matrix generated on Step1 to built the dose omission event on the cohorts that are of interest. Store the dataset with the modifications. **Note**: dose_omission is computed independent from the dose_reduction
        - Step4: Combine the dose_reduction dataset and dose_omission dataset 
-       - Step5: Merge the dataset from Step4 with the dataset from initial unbalanced design matrix from Step1.( from Step1 matrix are selected only the cohorts which are apart from the dose modification: i.e cohort 1 and 2 respectively
+       - Step5: Merge the dataset from Step4 with the dataset from initial unbalanced design matrix from Step1.( from Step1 matrix  selecte only the cohorts which are  apart from the dose modification: i.e cohort 1 and 2 respectively
    
    
     B. Simulation
