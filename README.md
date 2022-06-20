@@ -4,11 +4,11 @@ Impact of dosing history on the assessment of TGI
 ## Description of the files from *Maia/Rscript*
 
 1. **SimPred.R**: contains the construction of models under the analytical form.
- One can found the models used for the simulations for a flat/constant dose and time-varying dose and also the corresponding design matrices. To check the implementation of the model, the simulations where tested for the design matrices with DOSE=10 for the flat dose level, and  DOSE=(10,5) for time varying dose.
+ One can found the models used for the simulations for a flat/constant dose and time-varying dose and also the corresponding design matrices to test thid models. To check the implementation of the model, the simulations where tested for the design matrices with DOSE=10 for the flat dose level, and  DOSE=(10,5) for time varying dose.
  
    **Note**: In mrgsolve, using $PRED or $TABLE to exppress the form of the model, by construction these 2 blocks does not capture the time-varying covariates. Thus, the model structure for the time-varying was implemented recursively.
 
-2. **SimODE.R** : contains the construction models under the ODE form. In this file, one can found the model structure expressed in the mrgsolve syntax, the design matrices for the flat dose and time-varying dose and the simulations for both types of doses. To check the implementation of the model and the design matrices, the simulations were tested for the DOSE=10 flat dose level and for DOSE=(10,5) for time varying dose.
+2. **SimODE.R** : contains the construction of models under the ODE form. In this file, one can found the model structure expressed in the mrgsolve syntax, the design matrices for the flat dose and time-varying dose and the simulations for both types of dose-events. To check the implementation of the model and the design matrices, the simulations were tested for the DOSE=10 flat dose level and for DOSE=(10,5) for time varying dose.
 
 3. **BRMSAnalytic.R**: fit the brms on the analytical form **SimPred.R**.
  This file represent a first test to understand the synatx, implementation and fit of the **brms** as well as the checking of the outcome of the model. It was use a flat dose (DOSE=10) and a time varying dose (DOSE=5,10), the same as in the SimPred.R.
@@ -19,71 +19,72 @@ Once the syntax of the model and the results where satisfactory, the next step i
 
 Built the function to create the scenarios for the dose- manipulation.
 
- - **Scenarion_1_function.R**:unbalanced design matrix: crate a function to compute the number of subject per cohort and the number of observations per subject.
+ - **Scenarion_1_function.R**:unbalanced design matrix: crate a function that generate the number of participants per cohort and the number of observations per  individual folowing the truncated Poisson distribution (with parapeter lambda_N=4) and zero-truncated Poisson distribution ( with parameter lambda_0=4) respectively.
 
 
- - **dose_reduction_function** : using the dataset from the scenario_1_function make a function for teh dose reduction in the specific cohorts (ex: cohorts 3, 4,5)
+ - **dose_reduction_function** : using the dataset generated from the scenario_1_function, built a function for the dose reduction in the specific cohorts (i.e: cohorts 3, 4 and 5).
 
 
- - **dose_omission_function** : using the same dataset from the scenario_1_function make a function for teh dose omission independet from teh dose reduction in the specific cohorts (ex: cohorts 3, 4,5)
+ - **dose_omission_function** : using the same dataset generated from  the scenario_1_function, built a function for the dose omission independet from the dose reduction in the specific cohorts (i.e: cohorts 3, 4 and 5)
 
- - **functions**: this files contains all the functions above : useful for generate the entire dataset.
+ - **functions**: this files contains all the above functions: useful to generate the entire simulation.
 
- - **Merge_sim_data**: it contains the repetion of the final deisgn matrix:
-
-
-
-4. **Scenario_1.R**: balanced design matrix: 
-    - dose-cohorts with same number of individual/cohort:
-       - 5 cohorts
-       - 5 individual/cohort
-       - 25 individual in total
-
-    -  each cohort have a different flat/constant dose=> 5 dose levels 
-    -  all individuals:  same number of observations 
  
- 5. **Scenario_2.R**: unbalanced design matrix
- 
-    **Remark**: to run this file it is necessary to run and source the **SimODE.R** before
-   
-     - dose-cohorts with different number of individual/cohort:
-       - 5 cohorts
-       - number of individual per cohort follows a truncated Poisson distr. (lambda_N=4)
-       - obtain between 3 and 10 individuals per cohort.
-
-    -  each cohort have a different flat/constant dose=> 5 dose levels 
-    -  number of observations per individual is different and it follows a zero-truncated Poisson distr. (lambda_0=4)
-    -  lambda_0 reflect the short follow-up or early treatment discontinuation
 
 
- 6. **Scenario_2A.R**: unbalanced design matrix. 
- 
-    **Remark**:to run this file it is necessary to run and source the **SimODE.R** before.
- 
-     - Same scenario as **Scenario_2.R**
- 
-    **NOTE**: this file contain a proper R code for the future design matrix compared to the **Scenario_2.R**, where I forced some value by hand to take a certain value.
-           
-           
-  7. **Scenario_2_Dose_Reduction** : unbalanced design matrix with dose reductions in the higher dose cohorts 
-  
-     
-     **Remark**: to run this file it is necessary to run and source before the **SimODE.R**, then **Scenario_2A.R** .
-     
-     - Same design as Scenario_2A.R
-     - Add dose reduction to the 3rd,4th and 5th dose-cohort
-           
-           
-   8. **Scenario_3_Dose_Omission** : unbalanced design matrix with dose omission in the higher dose cohorts
+
+4. **Scenario_0_simulation.R**: balanced design matrix: 
+    - dose-cohorts with same number of observations/individual:
+       - 5 dose-cohorts : dose levels equal to 1/6, 1/2, 1, 2 and 3 mg
+       - generate the number of  individual/cohort ~ **TruncatedPoisson(lambda_N=4)**
+       - total number of individul per trial is equal to the sum of the individual/cohort
+       - each cohort have a different flat/constant dose => the corresponding 5 dose levels 
+       - **all individuals:  equal number of observations** 
+       
+    -  simulate individual SLD time profiles with mrgsim()
+    -  repeate each trail multiple time and store the resulting simulation dataset as a data frame
+    -  the simulated individual SLD time profiles are pruned by discarding data points past the first instance of 20% increase from nadir
+    -  plot the SLD profile for one of the simulation
     
-      **Remark**: to run this file it is necessary to run and source before the **SimODE.R**, **Scenario_2A.R** .
-      - Same design as Scenario_2A.R
-      - Add the dose Omission on 3rd, 4th and 5th cohort independent on the design matrix from **Scenario_2_Dose_Reduction**, only using the data set from Scenario_2A
-      - For the highest dose -cohort, there is as a constraint : the dose omission always affects 2 dosing events in a row ( TO CHECK)
+    **Remark**: source the SimODE.R
+    
+ 
+ 5. **Scenario_1_simulation.R**: unbalanced design matrix:
+     - dose-cohorts with different number of participants/cohort and different number of observations/individual:
+       - 5 dose-cohorts : dose levels equal to 1/6, 1/2, 1, 2 and 3 mg
+       - generate the number of  individual/cohort ~ **TruncatedPoisson(lambda_N=4)**
+       - total number of individul per trial is equal to the sum of the individual/cohort
+       - generate the number of  observations/individual ~ **ZeroTruncatedPoisson(lambda_0=4)**
+       - each cohort have a different flat/constant dose => the corresponding 5 dose levels 
+       - **NOTE**: lambda_0 reflect the short follow-up or early treatment discontinuation
+       
+    -  simulate individual SLD time profiles with mrgsim()
+    -  repeate each trail multiple time and store the resulting simulation dataset as a data frame
+    -  the simulated individual SLD time profiles are pruned by discarding data points past the first instance of 20% increase from nadir
+    -  plot the SLD profile for one of the simulation
 
-**NOTE**: Next updated need to be implemented: 
+   **Remark**:  source the **SimODE.R** and **Scenario_1_function** before compiling this file
+
+ 6. **Scenario_2_dose_modification_simulation.R**: unbalanced design matrix with dose modifications.
+ 
+     **NOTE** This file contains the design of the replicated simulations implemented with all scenarios and constratints to reflect the actual clinical trial conditions.
+ 
+    A. Built the design matrix
+       - Step1: generate the initial unbalanced design matrix: use  **Scenario_1_function**
+       - Step2: Dose reduction : use **dose_reduction_function** on the unbalanced design matrix generated on Step1 to built the dose reduction event on the cohorts that are of interest. Store the dataset with the modifications.   
+       - Step3: Dose omission: use **dose_omission_function** on the unbalanced design matrix generated on Step1 to built the dose omission event on the cohorts that are of interest. Store the dataset with the modifications. **Note**: dose_omission is computed independent from the dose_reduction
+       - Step4: Combine the dose_reduction dataset and dose_omission dataset 
+       - Step5: Merge the dataset from Step4 with the dataset from initial unbalanced design matrix from Step1.( from Step1 matrix  selecte only the cohorts which are  apart from the dose modification: i.e cohort 1 and 2 respectively
    
-             - dose reductions for  3rd ,4th and 5 th cohorts ( toxicity)//TO CHECK
-             - remove the measurements that incresed more then 20% from nadir.//DONE
-             - dose omision // in process
-             - cumulates events of dose-reduction and dose-omission as described for Scenario_2. and Scenario_3.// TO DISCUSS
+   
+    B. Simulation
+
+      - simulate individual SLD time profiles with mrgsim() using the design matrix from A.
+      - repeate each trail multiple time and store the resulting simulation dataset as a data frame
+      - the simulated individual SLD time profiles are pruned by discarding data points past the first instance of 20% increase from nadir
+      - plot the SLD profile for one of the simulation
+   
+   **Remark**: source the **SimODE.R** and **functions.R** before compiling this file.
+           
+           
+  
