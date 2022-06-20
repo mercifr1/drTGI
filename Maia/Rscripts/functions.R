@@ -77,7 +77,8 @@ dose_reduction <- function(initial_data, cohort, proportion, reduction, n_unif_o
       IDflag_reduc = ifelse(ID %in% mysel_reduction, 1, 0),# flag for the sampled ID
       
       # dose reduction starting from the Time larger than TIME_unif_reduc for the specific patients( IDflag_omis==1 )
-      DOSE_reduc = ifelse(IDflag_reduc == 1 & TIME >= TIME_unif_reduc, reduction, DOSE)
+      ID_DOSEflag_reduc=ifelse(IDflag_reduc == 1 & TIME >= TIME_unif_reduc,1,0),
+      DOSE_reduc = ifelse(ID_DOSEflag_reduc==1, reduction, DOSE)
     ) 
   
 }
@@ -108,28 +109,28 @@ dose_omission <- function(initial_data, cohort, proportion, omission, n_unif_omi
     mutate(
       IDflag_omis = ifelse(ID %in% mysel_omission, 1, 0), # flag for the suject in question
       TIMEflag_omis = ifelse(IDflag_omis == 1 & TIME >= TIME_unif_omis, 1, 0),
-      DOSEflag_omis = {
+      ID_DOSEflag_omis = {
         TIMEflag_omis == 1
       } %>%
         {
           . * !duplicated(.)
         },
-      DOSE_omis = ifelse(DOSEflag_omis == 1, omission, DOSE)
+      DOSE_omis = ifelse(ID_DOSEflag_omis == 1, omission, DOSE)
     ) %>%
     ungroup()
   
   for (i in unique(data_omis$ID)) {
     try1 <- filter(data_omis, ID == i & COH == 5) %>%
       pull(DOSE_omis)
-    if (any(try1 == 0.001)) {
-      place <- which(try1 == 0.001)
+    if (any(try1 == omission)) {
+      place <- which(try1 == omission)
       if (length(try1) > place) {
-        try1[place + 1] <- 0.001
+        try1[place + 1] <- omission
       }
     }
     data_omis[data_omis$ID == i & data_omis$COH == 5, "DOSE_omis"] <- try1
   }
   
-  data_omis
+  data_omis%>%mutate(ID_DOSEflag_omis=ifelse(DOSE_omis!=DOSE,1,0))
 }
 
