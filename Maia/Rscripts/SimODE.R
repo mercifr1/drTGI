@@ -2,7 +2,7 @@
 library(mrgsolve)
 library(dplyr)
 library(ggplot2)
-library(purrr)
+library(purrr) #' useful for data manipulation
 library(brms)
 
 #'--------------------------ODE form: Simulation--------------------------------
@@ -13,28 +13,28 @@ library(brms)
 
 ## with ODE
 ode<-'
-$PARAM  TVKG =0.6, TVKS0=0.4, TVGAMMA=0.8, TVBASE =70, DOSE=10
+$PARAM  TVKG =0.6, TVKS0=0.2, TVGAMMA=0.8, TVBASE =70, DOSE=10, TVALPHA=2
 
-$OMEGA  0.005 0.03 0.003 0.01
+$OMEGA  0.005 0.03 0.003 0.01 0.04
 $SIGMA  0.05
-
 $CMT RESP
-
 $MAIN
 double KG = TVKG * exp(ETA(1));
 double KS0 = TVKS0 * exp(ETA(2));
 double GAMMA = TVGAMMA * exp(ETA(3));
 double BASE = TVBASE*exp(ETA(4));
+double ALPHA = TVALPHA*exp(ETA(5));
 RESP_0 = BASE;
-
 
 $ODE
 double KS=KS0 *exp( -GAMMA * SOLVERTIME);
-dxdt_RESP = KG *RESP -   KS*log(DOSE)*RESP;
 
+if(DOSE<1) {dxdt_RESP = KG *RESP ;}
+else{
 
+dxdt_RESP = KG *RESP -   KS*ALPHA*log(DOSE)*RESP;}
 $CAPTURE 
-  RESP_0 EPS(1) 
+  RESP_0 ALPHA EPS(1) 
 '
 #' Compile the model
 
