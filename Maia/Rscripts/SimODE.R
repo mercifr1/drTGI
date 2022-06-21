@@ -29,10 +29,7 @@ RESP_0 = BASE;
 $ODE
 double KS=KS0 *exp( -GAMMA * SOLVERTIME);
 
-if(DOSE<1) {dxdt_RESP = KG *RESP ;}
-else{
-
-dxdt_RESP = KG *RESP -   KS*ALPHA*log(DOSE)*RESP;}
+dxdt_RESP = KG *RESP -   KS*ALPHA*log(1+DOSE)*RESP;
 $CAPTURE 
   RESP_0 ALPHA EPS(1) 
 '
