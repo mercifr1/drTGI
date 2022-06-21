@@ -77,6 +77,7 @@ Built the function to create the scenarios for the dose- manipulation.
        - Step5: Merge the dataset from Step4 with the initial unbalanced design matrix from Step1.( from Step1 matrix  selecte only the cohorts which are  apart from the dose modification: i.e cohort 1 and 2 respectively
        
    **Remark 1**: Each scenario implemetation contains multiple flag columns, in order to merge and bind correctly the final design matrix. 
+   
    **Remark 2**: We generate(repeat) multiple times the design matrix then on each repeatition simulate the SLD profiles.
               
    
