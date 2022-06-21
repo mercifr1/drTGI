@@ -19,7 +19,7 @@ Once the syntax of the model and the results where satisfactory, the next step i
 
 Built the function to create the scenarios for the dose- manipulation.
 
- - **Scenarion_1_function.R**:unbalanced design matrix: crate a function that generate the number of participants per cohort and the number of observations per  individual folowing the truncated Poisson distribution (with parapeter lambda_N=4) and zero-truncated Poisson distribution ( with parameter lambda_0=4) respectively.
+ - **Scenarion_1_function.R**:unbalanced design matrix: create a function that generate the number of participants per cohort and the number of observations per  individual folowing the truncated Poisson distribution (with parapeter lambda_N=4) and zero-truncated Poisson distribution ( with parameter lambda_0=4) respectively.
 
 
  - **dose_reduction_function** : using the dataset generated from the scenario_1_function, built a function for the dose reduction in the specific cohorts (i.e: cohorts 3, 4 and 5).
@@ -65,24 +65,28 @@ Built the function to create the scenarios for the dose- manipulation.
 
    **Remark**:  source the **SimODE.R** and **Scenario_1_function** before compiling this file
 
- 6. **Scenario_2_dose_modification_simulation.R**: unbalanced design matrix with dose modifications.
+ 6. **Scenario_2_3_4_dose_modification_simulation.R**: unbalanced design matrix with dose modifications.
  
-     **NOTE** This file contains the design of the replicated simulations implemented with all scenarios and constratints to reflect the actual clinical trial conditions.
+     **NOTE** This file contains the replicated design matrix and the simulations, implemented with all scenarios and constratints to reflect the actual clinical trial conditions.
  
     A. Built the design matrix
        - Step1: generate the initial unbalanced design matrix: use  **Scenario_1_function**
-       - Step2: Dose reduction : use **dose_reduction_function** on the unbalanced design matrix generated on Step1 to built the dose reduction event on the cohorts that are of interest. Store the dataset with the modifications.   
-       - Step3: Dose omission: use **dose_omission_function** on the unbalanced design matrix generated on Step1 to built the dose omission event on the cohorts that are of interest. Store the dataset with the modifications. **Note**: dose_omission is computed independent from the dose_reduction
-       - Step4: Combine the dose_reduction dataset and dose_omission dataset 
-       - Step5: Merge the dataset from Step4 with the dataset from initial unbalanced design matrix from Step1.( from Step1 matrix  selecte only the cohorts which are  apart from the dose modification: i.e cohort 1 and 2 respectively
+       - Step2: **Scenario 2**:  Dose reduction : use **dose_reduction_function** on the unbalanced design matrix generated on Step1 to built the dose reduction event on the cohorts of interest. Store the dataset with the modifications.   
+       - Step3: **Scenario 3**: Dose omission: use **dose_omission_function** on the unbalanced design matrix generated on Step1 to built the dose omission event on the cohorts  of interest. Store the dataset with the modifications. **Note**: dose_omission is computed independent from the dose_reduction
+       - Step4:**Scenario 4**: Combine the dose_reduction dataset and dose_omission dataset from step2 and step3
+       - Step5: Merge the dataset from Step4 with the initial unbalanced design matrix from Step1.( from Step1 matrix  selecte only the cohorts which are  apart from the dose modification: i.e cohort 1 and 2 respectively
+       
+   **Remark 1**: Each scenario implemetation contains multiple flag columns, in order to merge and bind correctly the final design matrix. 
+   **Remark 2**: We generate(repeat) multiple times the design matrix then on each repeatition simulate the SLD profiles.
+              
    
-   
-    B. Simulation
-
-      - simulate individual SLD time profiles with mrgsim() using the design matrix from A.
-      - repeate each trail multiple time and store the resulting simulation dataset as a data frame
-      - the simulated individual SLD time profiles are pruned by discarding data points past the first instance of 20% increase from nadir
-      - plot the SLD profile for one of the simulation
+    B. Simulations
+    
+       - simulate individual SLD time profiles with mrgsim() using the design matrix from A for all scenarios independet
+      
+       - repeate each trail multiple time and store the resulting simulation dataset as a data frame
+       - the simulated individual SLD time profiles are pruned by discarding data points past the first instance of $20%$ increase from nadir
+       - plot the SLD profile for one of the simulation
    
    **Remark**: source the **SimODE.R** and **functions.R** before compiling this file.
            
