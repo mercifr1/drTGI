@@ -36,7 +36,8 @@ data {
 }
 
 transformed data{
-  real x_r[1] = {dose}  ;
+  real x_r[1] = {dose}
+  
   int x_i[0];
 }
 
@@ -125,9 +126,9 @@ model {
     for(t in 1:nTime[J]){
     index=index+1;
     
-  real y_hat[1,1] =  integrate_ode_rk45(sld, y0, t0,  ts,  theta,  x_r,  x_i);
+  real tmp[1,1] =  integrate_ode_rk45(sld, y0, t0,  ts,  theta,  x_r,  x_i);
     
-     y_pred[index]= y_hat[1,1];
+     y_pred[index]= tmp[1,1];
       
       
     y[index] ~ normal(y_pred[timeInd[index]],sigma);
@@ -145,4 +146,8 @@ model {
      
      
 }
+
+
+
+
 
