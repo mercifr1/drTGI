@@ -1,12 +1,3 @@
-//
-// This Stan program defines a simple model, with a
-// vector of values 'y' modeled 
-//
-// Learn more about model development with Stan at:
-//
-//    http://mc-stan.org/users/interfaces/rstan.html
-//    https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
-//
 
 
 functions{
@@ -39,7 +30,7 @@ data {
   int<lower=1> J;// number of individuals
   int<lower=1> nTime[J];// number of observations per subject 
   int<lower=1> uniqueT;// number of timepoints all unique time points
-  real ts[N];//timepoints for which ODE solutions are requested
+  real ts[uniqueT];//timepoints for which ODE solutions are requested
   int<lower=0> timeInd[N]; // numeric time indicator
   real y[N];//response vector
   real t0;// starting time
@@ -147,18 +138,16 @@ model {
     theta[4]=alpha[j];
     
     
-    print(t0);
-    print(y0);
-    print(theta);
+   
     
     curr_ts = extract_ts(ts, j, index + 1, nTime);
-    y_hat[(index +1 ):(index + nTime[j] )] = integrate_ode_rk45(sld, y0, t0, curr_ts, theta, x_r, x_i);
-   print(y_hat);
+    y_hat[(index + 1 ):(index + nTime[j] )] = integrate_ode_rk45(sld, y0, t0, curr_ts, theta, x_r, x_i);
+   
   
     //likelihood
     for(t in 1:nTime[j]){
       
-    index=index+1;
+    index = index+1;
     
    // y_pred[index]= y_hat;
     y[index] ~ normal(y_hat[timeInd[index],1],sigma);
