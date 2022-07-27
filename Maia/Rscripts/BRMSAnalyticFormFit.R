@@ -1,5 +1,23 @@
+###############################################################################
+
+
+# TGI: Fit the Analytically form of the ODE with brms package
+
+# BRMS: Bayesian regression models using Stan see:https://paul-buerkner.github.io/brms/
+
+# 31-07-2022
+
+# Maia Muresan
+
+################################################################################
+
+
+
+# source the analytical form simulation from SimPRED.R
 source("C:/Users/muresai1/Desktop/drTGI/Maia/Rscripts/SimPRED.R")
-source("C:/Users/muresai1/Desktop/drTGI/Maia/Rscripts/Simulation_SLD_complete.R")
+
+# not used here: in case we want to take the complete simulations 
+#source("C:/Users/muresai1/Desktop/drTGI/Maia/Rscripts/Simulation_SLD_complete.R")
 
 #'Fit with brms 
 #'-----------------------
@@ -13,7 +31,7 @@ library(brms)
 #' log-transformation of the parameters
 #' 
 
-brms_data<-snd.flt%>%
+brms_data<-snd.flt%>%# snd.flt data set is from SimPRED.R 
   mutate(lKG=log(KG),lKS0=log(KS0),lGAMMA=log(GAMMA),lBAS=log(BASE))%>%
   subset(select=-c(KS0,KG,GAMMA,BASE))
 names(brms_data)
@@ -80,7 +98,7 @@ getpr3<-get_prior(RESP ~ exp(lBAS) *  exp( exp(lKG) * TIME - ( exp(lKS0) *log(DO
 #' 
 
 
-brms_data_2<-snd.tv%>%
+brms_data_2<-snd.tv%>% # snv.tv data set is from SimPred.R
   mutate(lKG=log(KG),lKS0=log(KS0),lGAMA=log(GAMMA),lBAS=log(BASE))%>%subset(select=-c(KS0,KG,GAMMA,BASE))
 names(new_data_2)
 head(new_data_2)
