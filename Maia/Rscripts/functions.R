@@ -1,3 +1,21 @@
+###############################################################################
+
+# TGI : File with all the functions creates to built all scenarios
+#     : Useful to generate the entire simulation
+
+# function ti built the time matrix
+# Scenario_1: initial data set unbalanced design matrix 
+# Scenario_2: dose reduction
+# Scenario_3: dose omission
+
+# 31-07-2022
+
+# Maia Muresan
+
+################################################################################
+
+
+
 #' build a function to define the time
 
 funtime <- function(ny, week) {
@@ -5,6 +23,9 @@ funtime <- function(ny, week) {
   tyear <- round(tweek / 365, 3) #' transform time in year
   return(data.frame(N_TIME = 0:ny, tyear)) #' return data frame
 }
+
+
+# function to create scenario 1
 scenario_1 <- function(doses, nweek, week,n_N,lambda_N, lambda_0) {
   #' doses: dose levels: a vector with the dose-cohorts
   #' nweek: dose administration at every 6 week : vector with the time( parameter for the for the funtime())
@@ -50,6 +71,7 @@ scenario_1 <- function(doses, nweek, week,n_N,lambda_N, lambda_0) {
 
 
 
+# function to create scenario 2 with dose reduction on the desired cohorts
 dose_reduction <- function(initial_data, cohort, proportion, reduction, n_unif_omis, min_unif_omis,max_unif_omis) {
   
   
@@ -83,6 +105,8 @@ dose_reduction <- function(initial_data, cohort, proportion, reduction, n_unif_o
   
 }
 
+
+# function to create scenario 3 with dose omission on the desired cohorts
 
 dose_omission <- function(initial_data, cohort, proportion, omission, n_unif_omis, min_unif_omis, max_unif_omis) {
   
