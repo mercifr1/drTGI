@@ -39,10 +39,10 @@ dose_omission <- function(initial_data, cohort, proportion, omission, n_unif_omi
   for (i in unique(data_omis$ID)) {
     try1 <- filter(data_omis, ID == i & COH == 5) %>%
       pull(DOSE_omis)
-    if (any(try1 == 0.001)) {
-      place <- which(try1 == 0.001)
+    if (any(try1 == omission)) {
+      place <- which(try1 == omission)
       if (length(try1) > place) {
-        try1[place + 1] <- 0.001
+        try1[place + 1] <- omission
       }
     }
     data_omis[data_omis$ID == i & data_omis$COH == 5, "DOSE_omis"] <- try1
