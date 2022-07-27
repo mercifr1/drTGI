@@ -1,9 +1,22 @@
+###############################################################################
+
+# TGI : Simulation SLD profiles from  ODE with mrgsolve 
+
+# 31-07-2022
+
+# Maia Muresan
+
+################################################################################
+
+
+
+
 #Libraries
-library(mrgsolve)
-library(dplyr)
-library(ggplot2)
-library(purrr) #' useful for data manipulation
-library(brms)
+library(mrgsolve) # package for simulation see https://mrgsolve.org/
+library(dplyr) # data manipulation
+library(ggplot2) # plot
+library(purrr) #' family of map() functions  allow  to replace many for loops
+#'                with code that is both more succinct and easier to read.
 
 #'--------------------------ODE form: Simulation--------------------------------
 #'------------------------------------------------------------------------------
@@ -13,7 +26,7 @@ library(brms)
 
 ## with ODE
 ode<-'
-$PARAM  TVKG =0.6, TVKS0=0.2, TVGAMMA=0.8, TVBASE =70, DOSE=10, TVALPHA=2
+$PARAM  TVKG =0.6, TVKS0=0.2, TVGAMMA=0.8, TVBASE =70,TVALPHA=2, DOSE=10 
 
 $OMEGA  0.005 0.03 0.003 0.01 0.04
 $SIGMA  0.05
@@ -31,13 +44,18 @@ double KS=KS0 *exp( -GAMMA * SOLVERTIME);
 
 dxdt_RESP = KG *RESP -   KS*ALPHA*log(1+DOSE)*RESP;
 $CAPTURE 
-  RESP_0 ALPHA EPS(1) 
+  RESP_0 BASE KG TVKG KS0 TVKS0 GAMMA TVGAMMA ALPHA TVALPHA EPS(1) ETA(1) ETA(2) ETA(3) ETA(4) ETA(5)
 '
 #' Compile the model
 
 set.seed(123)
 model_ode<-mcode("ODE",ode)
 
+
+ 
+
+#' Built simple design matrices for flat dose and time-varying dose 
+#' then, simulate SLD time profiles 
 
 #' Construction of the Time matrix
 #'----------------------------------------------------
@@ -53,11 +71,11 @@ funtime<-function(end,delta){
 
 indf<-tibble(ID=1:nInd) %>%
   split(.$ID) %>%
-  map_dfr(., ~funtime(1,1/10), .id="ID")
+  map_dfr(., ~funtime(1,1/10), .id="ID") # time (years)
 head(indf,n=15)
 
 
-#' Design matrix: Constant dose over time
+#' Design matrix: Flat dose over time
 #'----------------------------------------------------
 
 
@@ -74,6 +92,7 @@ flto<-indf %>%
   subset(select=-c(ty))
 
 head(flto,n=15)
+
 #' Design matrix: Time-varying Dose
 #'----------------------------------------------------
 
