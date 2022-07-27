@@ -1,10 +1,21 @@
-#Libraries
-library(mrgsolve)
-library(dplyr)
-library(ggplot2)
-library(purrr)
-library(brms)
+###############################################################################
 
+# TGI : Simulation SLD profiles from  analytically solution of ODEwith mrgsolve 
+
+# 31-07-2022
+
+# Maia Muresan
+
+################################################################################
+
+
+
+#Libraries
+library(mrgsolve) # package for simulation see https://mrgsolve.org/
+library(dplyr) # data manipulation
+library(ggplot2) # plot
+library(purrr) #' family of map() functions  allow  to replace many for loops
+#'                with code that is both more succinct and easier to read.
 
 #'-------------------Analytically form: Simulation------------------------------
 #'------------------------------------------------------------------------------
@@ -32,11 +43,15 @@ double KS =  KS0*exp(-GAMMA * TIME);
 double RESP = RESP_0*exp((KG*TIME)-(KS0*log(DOSE)/GAMMA)*(1-exp(-GAMMA*TIME)));
 
 
-$CAPTURE    RESP RESP_0 EPS(1)
+$CAPTURE    RESP RESP_0 EPS(1) KG KS0 GAMMA BASE
 "
 #' Compile the model
 set.seed(123)
 model_pred<-mcode("PRED",pred)
+
+
+#' Built simple design matrices for flat dose and time-varying dose 
+#' then, simulate SLD time profiles 
 
 
 #' Construction of Time matrix
@@ -87,7 +102,7 @@ head(tv,n=15)
 
 #'Constant dose
 set.seed(123)
-snd.flt<-mrgsim(model_pred, flt, carry.out="DOSE",end=-1,output="df") 
+snd.flt<-mrgsim(model_pred, flt, carry.out="DOSE,KG,KS0,GAMMA,BASE",end=-1,output="df") 
 snd.flt<-snd.flt%>%mutate(DV=RESP+EPS_1)
 head(snd.flt)
 #'Plot
@@ -114,7 +129,10 @@ ggplot(snd.flt, aes(TIME,DV,group=ID,color=factor(ID)))+
 #' In our case, we want to capture the time-varying Dose
 #' Thus: PRED should be computed recursively  
 #' 
-pred2 <- '
+
+
+
+pred_recursive<- '
 $PARAM TVKG =0.6, TVKS0=0.4, TVGAMMA=0.8, TVBASE =70 ,DOSE=10
 $OMEGA 0.005 0.03 0.003 0.01
 $SIGMA 0.05
@@ -139,13 +157,15 @@ RESP_0 = RESP;
 TLAST = TIME;
 KS0 = KS;
 
-$CAPTURE  RESP RESP_0 BASE EPS(1)
+$CAPTURE  RESP RESP_0  EPS(1) KG KS0 GAMMA BASE
 '
+# if(NEWIND <= 1):  is a new individual indicator : see https://mrgsolve.org/user_guide/model-specification.html#newind
 
-mod3 <- mcode("pred2", pred2, end = -1) 
+
+mod_recursive <- mcode("PREDREC", pred_recursive, end = -1) 
 
 set.seed(123)
-snd.tv<-mrgsim_d(mod3, as.data.frame(tv),carry.out="DOSE") %>% 
+snd.tv<-mrgsim_d(mod_recursive, as.data.frame(tv),carry.out="DOSE,KG,KS0,GAMMA,BASE") %>% 
   as.data.frame()
 
 snd.tv<-snd.tv%>%mutate(DV=RESP+EPS_1)
