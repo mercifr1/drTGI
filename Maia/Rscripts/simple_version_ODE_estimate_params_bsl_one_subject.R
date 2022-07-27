@@ -1,3 +1,22 @@
+################################################################################
+
+# Fit TGI model:   Solving an simple version  ODE  for only 1 subject
+
+
+#  Estimating System Parameters and Initial State with rstan
+
+# test only on design_flat: flat dose_cohort Scenrio_1
+
+
+# 31-07-2022
+
+# Maia Muresan
+
+################################################################################
+
+source("C:/Users/muresai1/Desktop/drTGI/Maia/Rscripts/Simulation_SLD_complete.R")
+
+
 library(rstan)
 
 simulated_data<-design_flat%>%
@@ -5,8 +24,8 @@ simulated_data<-design_flat%>%
   dplyr::mutate(TIME=ifelse(TIME<0.1,0,TIME),N_TIME=N_TIME)%>%
   select(ID,TIME,N_TIME,ID_OBS,DOSE,DV,BASE, KG, KS0, GAMMA, ALPHA)
 
-
-
+head(simulated_data$TIME,n=16)
+head(simulated_data$DV,n=16)
 
 
 
@@ -32,12 +51,16 @@ y_hat <- structure(head(simulated_data$DV,n=20),.Dim=c(20,1))
 data<-list(T=T,t0=t0,ts=ts,theta=theta, y_hat=y_hat,dose=dose)
 
 
-fit<-stan (file="C:/Users/muresai1/Desktop/drTGI/Maia/Rscripts/simple_version_ODE_ref_one_subject.stan",
+fit1<-stan (file="C:/Users/muresai1/Desktop/drTGI/Maia/Rscripts/simple_version_ODE_ref_one_subject.stan",
            iter=1000,chains = 1)
 
-results<-summary(fit)
+results_1subject<-summary(fit1)# is a list 
+summary_params<-results_1subject[[1]]
+params<-results_1subject[[2]]
 
-summary(fit)
-head(data_for_fit$DV,n=8)
-head(design_flat$TIME,n=8)
-head(design_flat$DOSE,n=8)
+summaries_fit1<-summary(fit)$summary
+
+# Save an object to a file
+sum_data<-saveRDS(summaries_fit1, file = "simple_version_ODE_ref_one_subject_fit.rds")
+# Restore the object
+readRDS(file = "simple_version_ODE_ref_one_subject_fit.rds")
