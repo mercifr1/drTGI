@@ -1,6 +1,17 @@
+//  Test a simple version of TGI model under ODE with centered parametrization 
+
+// Remark: Cmdstan 2.24 introduce a new ODE interface see: https://mc-stan.org/users/documentation/case-studies/convert_odes.html
+// The Stan code above is implemented in the old solver inference 
+
+// First step: Coding the ODE System Function
+// see https://mc-stan.org/docs/2_25/stan-users-guide/coding-the-ode-system-function.html
 
 
-//
+
+// Remarks:
+// sigma: sd error is considered a constant, here the sd error is not a prior and
+//        do not give a distribution  
+// thetas: kg, ks0, gamma, alpha are following a normal distribution with a specific mean and standard deviation
 
 functions {
   //The types in the ODE system function are strict:
@@ -34,12 +45,12 @@ transformed data{
   int x_i[0]; // ineteger covariate that we do not use here, it is a a vector of length 0
   
   
-  int f_index[J];// create an index of leght total number of subjects J. We need this index later 
-  f_index[1] =1;// initialize the thendex to 1 for the first subject
+  int f_index[J];// create an index of lenght total number of subjects J. We need this index later 
+  f_index[1] =1;// initialize the the index to 1 for the first subject
   for (i in 2:J)
     f_index[i] = f_index[i-1] + Nobs[i-1];
-  x_r[1]=dose[T];// conitinous covariate dos e
-  sigma = 0.17;
+  x_r[1]=dose[T];// conitinous covariate dose
+  sigma = 0.17;// constant error 
 }
 parameters {
   
@@ -76,8 +87,8 @@ alpha ~ normal(1.5, 0.1);
 
 generated quantities{
 real theta[J,4];
-real IPRED[sum(Nobs)];
-  real DV[sum(Nobs)]; 
+real IPRED[sum(Nobs)];// individual prediction
+  real DV[sum(Nobs)]; // depende variable : here SLD
   
 
 for(j in 1:J){ 
@@ -92,7 +103,7 @@ theta[j,4]=alpha[j];
 
 for (i in 1:J) {
     real sol[Nobs[i],1];
-   
+   //segment (): see https://mc-stan.org/docs/2_26/functions-reference/slicing-and-blocking-functions.html
  sol = integrate_ode_bdf(dSLD_dt, base[i] , 0.0, segment(ts, f_index[i], Nobs[i]), theta[i], x_r, x_i); 
  for (j in 1:Nobs[i])
      IPRED[f_index[i] + j-1] =sol[j,1];
@@ -104,4 +115,6 @@ for (j in 1:sum(Nobs))
  
   
 }
+
+
 
