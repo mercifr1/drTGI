@@ -1,4 +1,23 @@
+###############################################################################
 
+# TGI : Built function  to create Scenario 2 design matrix
+
+# Unbalanced design matrix with dose reduction
+# Dose reduction  on the highest dose-cohort at a specific time point
+
+# 31-07-2022
+
+# Maia Muresan
+
+################################################################################
+library(tidyr)
+library(extraDistr)
+
+# Built a function to create the design matrix with dose reduction on highest dose-cohort
+
+
+# We set to 10%, 25% and 50% the proportion of patients with dose omission in
+# the 3rd, 4th and 5th dose-cohorts respectively, leaving the other cohorts unaffected
 
 dose_reduction <- function(initial_data, cohort, proportion, reduction, n_unif_omis, min_unif_omis,max_unif_omis) {
   
