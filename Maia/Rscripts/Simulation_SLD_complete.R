@@ -12,7 +12,7 @@ source("C:/Users/muresai1/Desktop/drTGI/Maia/Rscripts/functions.R")
 
 #' **Design matrix with scenarios 2, 3 and 4.**
 #' ------------------------------------------------------------------------------
-unbalance_dose_modif <- replicate(n = 4, { #' replicate the design matrix
+unbalance_dose_modif <- replicate(n = 10, { #' replicate the design matrix
 
   #' step 1: generate the initial data set with function <scenario_1> from functions.R
   #'
@@ -147,7 +147,7 @@ for (i in 1:length(unbalance_dose_modif)) {
     ) #' unique ID for each replicate
   #' simulation for the flat dose design matrix  with mrgsim_d()
   sim_flat_dose[[i]] <- mrgsim_d(model_ode, as.data.frame(flat_dose_data[[i]]),
-    carry.out = "DOSE,ALPHA,COH,REP,ID2,ID_DOSEFLAG_REDUC,ID_DOSEFLAG_OMIS,ID_DOSEFLAG_REDUC_OMIS",
+    carry.out = "DOSE,COH,ID_OBS,N_TIME,REP,ID2",
     end = -1, nocb = F
   ) %>%
     dplyr::mutate(DV = RESP + EPS_1)
@@ -179,10 +179,10 @@ p_design_flat <- ggplot(filter(design_flat_nadir, REP == 2), aes(TIME, DV, group
   geom_point(size = 2) +
   theme_bw() +
   ylab("SLD") +
-  labs(
+  labs(color="DOSE",
     title = "Scenario 1: Unbalanced design matrix",
     subtitle = " SLD simulated profiles with  flat dose"
-  )
+  )+scale_color_manual(values=c("#E3DB71","#E7298A","#1B9E77","#A6761D",  "#7570B3"  ))
 p_design_flat
 
 
@@ -232,14 +232,14 @@ p_design_reduction <- ggplot(filter(design_reduction_nadir, REP == 2), aes(TIME,
   geom_point(size = 2) +
   theme_bw() +
   ylab("SLD") +
-  labs(
+  labs(color="DOSE",
     title = "Scenario 2: Unbalanced design matrix",
     subtitle = " SLD simulated profiles with  dose reduction"
-  )
+  )+scale_color_manual(values=c("#E3DB71","#E7298A","#1B9E77","#A6761D",  "#7570B3"  ))
 p_design_reduction
 
-
-
+# "#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02", "#A6761D"
+# "#333BFF", "#CC6600", "#9633FF", "#E2FF33", "#E3DB71"
 #' Scenario 3 simulation of the dose omission
 #' -----------------------------------------------------------------------------
 for (i in 1:length(unbalance_dose_modif)) {
@@ -286,10 +286,10 @@ p_design_omission <- ggplot(filter(design_omission_nadir, REP == 2), aes(TIME, D
   geom_point(size = 2) +
   theme_bw() +
   ylab("SLD") +
-  labs(
+  labs(color="DOSE",
     title = "Scenario 3: Unbalanced design matrix",
     subtitle = " SLD simulated profiles with dose omission"
-  )
+  )+scale_color_manual(values=c("red","#E3DB71","#E7298A","#1B9E77","#A6761D",  "#7570B3"  ))
 p_design_omission
 
 
@@ -332,7 +332,6 @@ design_reduction_omission_nadir <- design_reduction_omission %>%
   filter(FLAG_DVMIN == 0) %>%
   as.data.frame()
 
-
 #' plot the SLD profiles for one of the replicates
 #'
 p_design_reduction_omission <- ggplot(filter(design_reduction_omission_nadir, REP == 2), aes(TIME, DV, group = ID, color = factor(DOSE))) +
@@ -340,8 +339,11 @@ p_design_reduction_omission <- ggplot(filter(design_reduction_omission_nadir, RE
   geom_point(size = 2) +
   theme_bw() +
   ylab("SLD") +
-  labs(
+  labs(color="DOSE",
     title = "Scenario 4: Unbalanced design matrix",
     subtitle = " SLD simulated profiles with  dose omission and dose reduction"
-  )
+  )+scale_color_manual(values=c("red","#E3DB71","#E7298A","#1B9E77","#A6761D",  "#7570B3"  ))
 p_design_reduction_omission
+
+
+
