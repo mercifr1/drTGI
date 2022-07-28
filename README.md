@@ -1,5 +1,16 @@
 # drTGI
 Impact of dosing history on the assessment of TGI
+## Files and folders from *Maia/Rscript*
+  Simulation files:
+  - **SimODE.R** : ODE model syntax mrgsolve 
+  - **SimPred.R**: Analytical form of the ODE syntax mrgsolve
+  - **functions.R**: Rscript with useful functions to built the design matrices for simulation
+  - **Simulation_SLD_complete.R**: simulation of SLD time profiles for different scenarios of design matrices
+  
+  Fit model in Stan:
+  - **TGI_hierarchicalODE_random_effects.stan**: TGI hierarchical ODE model code in stan 
+  - **TGI_hierarchicalODE_random_effects.R** : R script with the model fit with cmdstan 
+  
 
 ## Description of the files from *Maia/Rscript*
 
