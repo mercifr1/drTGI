@@ -22,7 +22,8 @@ Impact of dosing history on the assessment of TGI
  - **Simulation_SLD_Scenario_0.R** : Simulated SLD times profile on a balanced design matrice 
  - **Simulation_SLD_Scenario_1.R** : Simulated SLD times profile on an unbalanced design matrice 
 
-Extra R folder:
+Extra folder with Rscript and Stan files:
+
 -**Other version ODE TGI stan codes**: a second version of solving the TGI ODE in stan 
 -**Example_hierarchicalODE_theoph**: example hierarchical ODE on theophylline data set : Stan codes
 -**First test ode sld integartor Rstan**: check how the output of the stan code for ODE and integartor taht solve the ODE works in stan  
