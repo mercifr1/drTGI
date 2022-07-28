@@ -81,7 +81,7 @@ Built the function to create the scenarios for the dose- manipulation.
    **Remark 2**: We generate(repeat) multiple times the design matrix then on each repeatition simulate the SLD profiles.
               
    
-   B. Simulations
+    B. Simulations
       - simulate individual SLD time profiles with mrgsim() using the design matrix from A for all scenarios independet
       - repeate each trail multiple time and store the resulting simulation dataset as a data frame
       - the simulated individual SLD time profiles are pruned by discarding data points past the first instance of $20%$ increase from nadir
