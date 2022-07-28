@@ -1,16 +1,32 @@
 # drTGI
 Impact of dosing history on the assessment of TGI
 ## Files and folders from *Maia/Rscript*
-  Simulation files:
+  Simulation files for TGI Claret model:
   - **SimODE.R** : ODE model syntax mrgsolve 
   - **SimPred.R**: Analytical form of the ODE syntax mrgsolve
   - **functions.R**: Rscript with useful functions to built the design matrices for simulation
   - **Simulation_SLD_complete.R**: simulation of SLD time profiles for different scenarios of design matrices
   
-  Fit model in Stan:
+  Fit model in Stan for TGI Claret model:
   - **TGI_hierarchicalODE_random_effects.stan**: TGI hierarchical ODE model code in stan 
   - **TGI_hierarchicalODE_random_effects.R** : R script with the model fit with cmdstan 
   
+ Extra Rscript:
+ - **CheckNonCenterParametrizationStanODE.R**: intuitive check for non-centered parametrization of the parameters in the TGI ODE model 
+ - **plot_parameters_model_TGI.R** : plot density parameters, random effects from Simulated dataset
+ - **BRMSAnalyticFormFit.R**: fit TGI ODE model on a simple flat dose-cohort with **brms** R package
+ - **TGI_SLD_ODE_nlmixr_fit.R**: fit TGI ODE model on a simulated dataset with flat dose cohort with **nlmixr** R package
+ - **S2_Dose_reduction_function.R** : function for Scenario 2 Dose reduction design matrix construction for simulations
+ - **S3_Dose_omission_function.R** : function for Scenario 3 Dose omission design matrix construction for simulations
+ - **Scenario_1_function.R** :Scebario 1 design matrix flat dose-cohort unbalanced matrices for simulations
+ - **Simulation_SLD_Scenario_0.R** : Simulated SLD times profile on a balanced design matrice 
+ - **Simulation_SLD_Scenario_1.R** : Simulated SLD times profile on an unbalanced design matrice 
+
+Extra R folder:
+-**Other version ODE TGI stan codes**: a second version of solving the TGI ODE in stan 
+-**Example_hierarchicalODE_theoph**: example hierarchical ODE on theophylline data set : Stan codes
+-**First test ode sld integartor Rstan**: check how the output of the stan code for ODE and integartor taht solve the ODE works in stan  
+-**TGI Simple version stan ODE** : stan code for simple version TGI ODE mode: for 1 subject, 3 subjects, constant standard error, centered parametrisation 
 
 ## Description of the files from *Maia/Rscript*
 
