@@ -1,6 +1,9 @@
 # drTGI
 Impact of dosing history on the assessment of TGI
-## Files and folders from *Maia/Rscript*
+
+1. Files and folders from *Maia/Rscript*
+2. Description of the files from *Maia/Rscript
+## 1.  Files and folders from *Maia/Rscript*
   Simulation files for TGI Claret model:
   - **SimODE.R** : ODE model syntax mrgsolve 
   - **SimPred.R**: Analytical form of the ODE syntax mrgsolve
@@ -24,12 +27,12 @@ Impact of dosing history on the assessment of TGI
 
 Extra folder with Rscript and Stan files:
 
--**Other version ODE TGI stan codes**: a second version of solving the TGI ODE in stan 
--**Example_hierarchicalODE_theoph**: example hierarchical ODE on theophylline data set : Stan codes
--**First test ode sld integartor Rstan**: check how the output of the stan code for ODE and integartor taht solve the ODE works in stan  
--**TGI Simple version stan ODE** : stan code for simple version TGI ODE mode: for 1 subject, 3 subjects, constant standard error, centered parametrisation 
+- **Other version ODE TGI stan codes**: a second version of solving the TGI ODE in stan   
+- **Example_hierarchicalODE_theoph**: example hierarchical ODE on theophylline data set : Stan codes  
+- **First test ode sld integartor Rstan**: check how the output of the stan code for ODE and integartor taht solve the ODE works in stan    
+- **TGI Simple version stan ODE** : stan code for simple version TGI ODE mode: for 1 subject, 3 subjects, constant standard error, centered parametrisation   
 
-## Description of the files from *Maia/Rscript*
+## 2. Description of the files from *Maia/Rscript*
 
 1. **SimPred.R**: contains the construction of models under the analytical form.
  One can found the models used for the simulations for a flat/constant dose and time-varying dose and also the corresponding design matrices to test thid models. To check the implementation of the model, the simulations where tested for the design matrices with DOSE=10 for the flat dose level, and  DOSE=(10,5) for time varying dose.
